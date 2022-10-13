@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import Config from "@/src/config";
+import Config from "../config/index";
 const qs = require('qs');
 
 class OAuthService {

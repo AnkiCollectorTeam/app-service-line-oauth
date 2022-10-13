@@ -1,6 +1,6 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import OAuthService from './OAuthService';
-import Config from "@/src/config";
+import Config from "../config/index";
 
 const app = express()
 const port = Config.server.port;

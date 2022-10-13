@@ -102,7 +102,5 @@ dist
 
 # TernJS port file
 .tern-port
-src/config/index.js
-.gitignore
-src/oauth/OAuthService.js
-src/oauth/index.js
+dist/
+
