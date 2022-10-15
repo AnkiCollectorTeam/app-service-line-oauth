@@ -30,4 +30,7 @@ Microservice for LINE OAuth login.
 ## TODO
 - [ ] How to set logging level?
 - [ ] Connect to MongoDB
-- [ ] Docker .env problem
+- [X] Docker .env problem
+
+## Docker Hub
+https://hub.docker.com/repository/docker/o2range/line-oauth 
