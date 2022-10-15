@@ -28,4 +28,4 @@ Microservice for LINE OAuth login.
 ```
 
 ## TODO
-- [] How to set logging level?
+- [ ] How to set logging level?
