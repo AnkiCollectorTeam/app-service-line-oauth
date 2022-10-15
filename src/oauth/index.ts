@@ -12,18 +12,19 @@ app.get('/', (_, res) => {
 })
 
 app.get('/login', (_, res) => {
-    const oauthUrl = `https://access.line.me/oauth2/v2.1/authorize? \
-                response_type=code& \
-                client_id=${Config.lineOauth.clientId}& \
-                redirect_uri=${Config.lineOauth.redirectUri}& \
-                state=${Config.lineOauth.state}& \
-                scope=profile%20openid%20email`;
+    const oauthUrl = `https://access.line.me/oauth2/v2.1/authorize?`+
+                `response_type=code&`+
+                `client_id=${Config.lineOauth.clientId}&`+
+                `redirect_uri=${Config.lineOauth.redirectUri}&`+
+                `state=${Config.lineOauth.state}&`+
+                `scope=profile%20openid%20email`;
 
+    console.log("OAuth Uri = ", oauthUrl);
     res.redirect(oauthUrl);
 })
 app.get('/callback', async (request: Request, response: Response) => {
     if (request.query.code == undefined || request.query.state == undefined) {
-        response.status(400).send("{'success': false, 'error': 'Invalid parameters'}");
+        response.status(400).send({'success': false, 'error': 'Invalid parameters'});
         return;
     }
 
@@ -49,11 +50,11 @@ app.get('/callback', async (request: Request, response: Response) => {
         }
     }).then(userProfile => {
         myOAuthService.uploadToDatabase(userProfile);
+        response.status(200).send({'success': true, 'data': userProfile});
     }).catch(error => {
         console.log(error.message);
+        response.status(500).send({'success': false, 'msg': error.message});
     })
-
-    response.status(200).send("{'success': true}");
 })
 
 app.listen(port, () => console.log(`Running on port ${port}`))
