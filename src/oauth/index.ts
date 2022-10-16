@@ -3,7 +3,6 @@ import OAuthService from './OAuthService';
 import MongoDBController from './Controller';
 import Config from "../config/index";
 import { Logger } from "tslog";
-import { userProfile } from "../schema";
 
 const app = express()
 const port = Config.server.port;
@@ -42,12 +41,12 @@ app.get('/callback', async (request: Request, response: Response) => {
     }).then(async (id_token) => {
         try {
             const userProfileRaw = await myOAuthService.getUserProfile(id_token);
-            const user = new userProfile({
+            const user = {
                 name: userProfileRaw.data.name,
                 email: userProfileRaw.data.email,
                 id: userProfileRaw.data.sub,
-                avatar: userProfileRaw.data.picture
-            });
+                avatar: userProfileRaw.data.picture,
+            };
 
             logger.debug("Profile response = ", user);
             return user;
@@ -62,11 +61,13 @@ app.get('/callback', async (request: Request, response: Response) => {
             response.status(200).send({ 'success': true, 'data': user });
             return savedDoc;
         } catch (error) {
+            logger.error("Error when fetch user profile. msg = ", error);
+            response.status(500).send({ 'success': false, 'msg': error });
             return error;
         }
 
     }).then(savedDoc => {
-        logger.info("SavedDoc is ", savedDoc);
+        logger.debug("SavedDoc is ", savedDoc);
     })
         .catch(error => {
             logger.error("Error when fetch user profile. msg = ", error);

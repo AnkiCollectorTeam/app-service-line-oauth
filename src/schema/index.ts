@@ -10,13 +10,13 @@ interface IUser {
 }
 
 // 2. Create a Schema corresponding to the document interface.
-const userSchema = new Schema<IUser>({
-    id: { type: 'string', required: true },
+export const userSchema = new Schema<IUser>({
+    id: { type: 'string', required: true, unique: true },
     name: { type: String, required: true },
     email: { type: String, required: true },
     avatar: String
 });
 
 // 3. Create a Model.
-export const userProfile = model<IUser>('User', userSchema, Config.db.collection);
+export const userModel = model<IUser>('User', userSchema, Config.db.collection);
 
