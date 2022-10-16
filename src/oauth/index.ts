@@ -1,13 +1,16 @@
 import express, { Request, Response } from 'express';
 import OAuthService from './OAuthService';
+import MongoDBController from './Controller';
 import Config from "../config/index";
 import { Logger } from "tslog";
+import { userProfile } from "../schema";
 
 const app = express()
 const port = Config.server.port;
-const logger: Logger = new Logger({ name: "Line-OAuth" });
+const logger: Logger = new Logger({ name: "Line-OAuth", minLevel: "info" });
 
 const myOAuthService = new OAuthService();
+const DBController = new MongoDBController(Config.db.host, Config.db.port, Config.db.database);
 
 app.get('/', (_, res) => {
     res.status(200).send("<h1>LINE OAuth Service</h1>")
@@ -39,28 +42,36 @@ app.get('/callback', async (request: Request, response: Response) => {
     }).then(async (id_token) => {
         try {
             const userProfileRaw = await myOAuthService.getUserProfile(id_token);
-            const userProfile = {
+            const user = new userProfile({
                 name: userProfileRaw.data.name,
                 email: userProfileRaw.data.email,
                 id: userProfileRaw.data.sub,
-                picture: userProfileRaw.data.picture
-            };
+                avatar: userProfileRaw.data.picture
+            });
 
-            logger.debug("Profile response = ", userProfile);
-            return userProfile;
+            logger.debug("Profile response = ", user);
+            return user;
         } catch (error) {
             logger.error("Error when fetch id_token. msg = ", error);
             return error;
         }
-    }).then(userProfile => {
-        // myOAuthService.uploadToDatabase(userProfile);
-        logger.info("Successfuly get userProfile.");
+    }).then(async user => {
+        try {
+            const savedDoc = await DBController.uploadToDatabase(user);
+            logger.info("Successfuly update userProfile.");
+            response.status(200).send({ 'success': true, 'data': user });
+            return savedDoc;
+        } catch (error) {
+            return error;
+        }
 
-        response.status(200).send({ 'success': true, 'data': userProfile });
-    }).catch(error => {
-        logger.error("Error when fetch user profile. msg = ", error);
-        response.status(500).send({ 'success': false, 'msg': error.message });
+    }).then(savedDoc => {
+        logger.info("SavedDoc is ", savedDoc);
     })
+        .catch(error => {
+            logger.error("Error when fetch user profile. msg = ", error);
+            response.status(500).send({ 'success': false, 'msg': error.message });
+        })
 })
 
 app.listen(port, () => console.log(`Running on port ${port}`))

@@ -20,11 +20,6 @@ class OAuthService {
             client_id: Config.lineOauth.clientId
         }))
     }
-
-    public async uploadToDatabase(userProfile: any){
-        //TODO HERE
-        console.log("INTO DATABASE", userProfile);
-    }
 }
 
 export = OAuthService;;
