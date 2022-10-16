@@ -10,7 +10,7 @@ WORKDIR /usr/src/app
 #Copy app directory
 COPY package*.json ./
 RUN npm install\
-        && npm install typescript -g
+        && npm install pm2 typescript -g
 
 # Bundle app source
 COPY . .

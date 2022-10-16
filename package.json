@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "tsc & node ./dist/oauth/index.js",
+    "start": "pm2-runtime ./dist/oauth/index.js",
     "dev": "tsc -w & nodemon ."
   },
   "author": "",
